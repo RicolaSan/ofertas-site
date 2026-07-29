@@ -17,14 +17,6 @@
 
     <!-- Config -->
     <script src="config/config.js"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const storeName = document.getElementById('storeName');
-            if (storeName && CONFIG.storeName) {
-                storeName.textContent = CONFIG.storeName;
-            }
-        });
-    </script>
 </head>
 <body>
     <!-- Loading Spinner -->
@@ -38,7 +30,7 @@
 
     <!-- Header -->
     <header class="header">
-        <h1 id="storeName">Ofertas do Mercado</h1>
+        <img id="logoHeader" class="header-logo" src="assets/logo_atacadao.png" alt="Logo" />
     </header>
 
     <!-- Contador -->

@@ -165,16 +165,18 @@ html, body {
     left: 0;
     right: 0;
     z-index: 10;
-    padding: 1rem 1.5rem;
+    padding: 0.75rem 1.5rem;
     background: linear-gradient(180deg, rgba(15,15,15,0.95) 0%, rgba(15,15,15,0) 100%);
     pointer-events: none;
+    display: flex;
+    align-items: center;
 }
 
-.header h1 {
-    font-size: 1.1rem;
-    font-weight: 600;
-    letter-spacing: -0.3px;
-    opacity: 0.9;
+.header-logo {
+    height: 32px;
+    width: auto;
+    object-fit: contain;
+    pointer-events: auto;
 }
 
 /* ===== CONTADOR DE OFERTAS ===== */
@@ -301,10 +303,10 @@ html, body {
     }
 
     .header {
-        padding: 1rem 1.5rem;
+        padding: 0.75rem 1.5rem;
     }
 
-    .header h1 {
-        font-size: 1.1rem;
+    .header-logo {
+        height: 36px;
     }
 }
