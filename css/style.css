@@ -1,0 +1,309 @@
+/* ===== RESET & BASE ===== */
+*, *::before, *::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    --bg-primary: #0f0f0f;
+    --bg-secondary: #1a1a1a;
+    --bg-card: #222222;
+    --text-primary: #ffffff;
+    --text-secondary: #aaaaaa;
+    --accent: #e53935;
+    --accent-hover: #c62828;
+    --success: #43a047;
+    --border: #333333;
+    --font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+}
+
+html, body {
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+    font-family: var(--font-family);
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* ===== OFERTAS CONTAINER ===== */
+.ofertas-container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    touch-action: none;
+}
+
+/* ===== OFERTA CARD ===== */
+.oferta-card {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg-primary);
+    transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.4s ease;
+    will-change: transform, opacity;
+}
+
+.oferta-card.active {
+    z-index: 2;
+    transform: translateY(0);
+    opacity: 1;
+}
+
+.oferta-card.next {
+    z-index: 1;
+    transform: translateY(100%);
+    opacity: 0.95;
+}
+
+.oferta-card.prev {
+    z-index: 0;
+    transform: translateY(-100%);
+    opacity: 0;
+}
+
+.oferta-card.swiping {
+    transition: none;
+}
+
+/* ===== IMAGEM DA OFERTA ===== */
+.oferta-imagem-wrapper {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    position: relative;
+}
+
+.oferta-imagem {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    user-select: none;
+    -webkit-user-drag: none;
+    background: var(--bg-primary);
+}
+
+/* Placeholder enquanto carrega */
+.oferta-imagem.loading {
+    opacity: 0;
+}
+
+.oferta-imagem.loaded {
+    opacity: 1;
+    transition: opacity 0.3s ease;
+}
+
+/* ===== FALLBACK PARA PDF ===== */
+.oferta-pdf-fallback {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    background: var(--bg-secondary);
+    gap: 1.5rem;
+    padding: 2rem;
+}
+
+.oferta-pdf-fallback .pdf-icon {
+    width: 80px;
+    height: 80px;
+    background: var(--accent);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    font-weight: 700;
+    color: white;
+}
+
+.oferta-pdf-fallback .pdf-nome {
+    font-size: 1.1rem;
+    color: var(--text-primary);
+    text-align: center;
+    max-width: 80%;
+    word-break: break-word;
+}
+
+.btn-pdf {
+    padding: 0.8rem 2rem;
+    background: var(--accent);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+    text-decoration: none;
+}
+
+.btn-pdf:hover {
+    background: var(--accent-hover);
+}
+
+/* ===== HEADER ===== */
+.header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 10;
+    padding: 1rem 1.5rem;
+    background: linear-gradient(180deg, rgba(15,15,15,0.95) 0%, rgba(15,15,15,0) 100%);
+    pointer-events: none;
+}
+
+.header h1 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    letter-spacing: -0.3px;
+    opacity: 0.9;
+}
+
+/* ===== CONTADOR DE OFERTAS ===== */
+.oferta-counter {
+    position: fixed;
+    top: 1rem;
+    right: 1.5rem;
+    z-index: 10;
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    font-weight: 500;
+    pointer-events: none;
+}
+
+/* ===== INDICADOR DE SWIPE ===== */
+.swipe-indicator {
+    position: fixed;
+    bottom: 2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--text-secondary);
+    font-size: 0.75rem;
+    opacity: 0.6;
+    animation: float 2s ease-in-out infinite;
+    pointer-events: none;
+}
+
+.swipe-indicator .arrow {
+    width: 24px;
+    height: 24px;
+    border: 2px solid var(--text-secondary);
+    border-left: 0;
+    border-top: 0;
+    transform: rotate(45deg);
+    animation: bounce 2s ease-in-out infinite;
+}
+
+@keyframes float {
+    0%, 100% { transform: translateX(-50%) translateY(0); }
+    50% { transform: translateX(-50%) translateY(-5px); }
+}
+
+@keyframes bounce {
+    0%, 100% { transform: rotate(45deg) translateY(0); }
+    50% { transform: rotate(45deg) translateY(5px); }
+}
+
+/* ===== SCROLLBAR CUSTOMIZADA (DESKTOP) ===== */
+::-webkit-scrollbar {
+    width: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--border);
+    border-radius: 3px;
+}
+
+/* ===== LOADING SPINNER ===== */
+.loading-spinner {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 100;
+    width: 40px;
+    height: 40px;
+    border: 3px solid var(--border);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+.loading-spinner.hidden {
+    display: none;
+}
+
+/* ===== MENSAGEM VAZIA ===== */
+.empty-state {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    color: var(--text-secondary);
+    z-index: 1;
+}
+
+.empty-state .empty-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    opacity: 0.5;
+}
+
+.empty-state p {
+    font-size: 1rem;
+}
+
+/* ===== RESPONSIVO ===== */
+@media (min-width: 768px) {
+    .oferta-imagem {
+        max-width: 480px;
+        max-height: 90vh;
+        border-radius: 12px;
+    }
+
+    .header {
+        padding: 1.5rem 2rem;
+    }
+
+    .header h1 {
+        font-size: 1.3rem;
+    }
+}
+
+@media (min-width: 1024px) {
+    .oferta-imagem {
+        max-width: 560px;
+        max-height: 85vh;
+    }
+}
