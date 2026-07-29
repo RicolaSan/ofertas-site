@@ -1,12 +1,13 @@
 /**
  * Cloudflare Pages Functions - API de Ofertas
  * 
- * Este arquivo é usado pelo Cloudflare Pages para criar
- * uma API serverless junto com o site estático.
- * 
- * Coloque este arquivo em: /functions/api/[[route]].js
- * Ele captura todas as rotas /api/* e /assets/*
+ * Adapta o Worker principal para o formato Pages Functions.
+ * Captura todas as rotas /api/* e /assets/*
  */
 
-// Re-exportar o worker principal
-export { default as onRequest } from '../../workers/oferta-worker.js';
+import worker from '../../workers/oferta-worker.js';
+
+export async function onRequest(context) {
+    const { request, env } = context;
+    return worker.fetch(request, env);
+}
