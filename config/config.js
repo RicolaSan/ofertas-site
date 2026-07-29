@@ -9,23 +9,23 @@ const CONFIG = {
     // Nome do estabelecimento
     storeName: 'Supermercado Ofertas',
 
-    // ⚠️ PRODUÇÃO: descomente e preencha com a URL do seu site
-    // api: {
-    //     baseUrl: 'https://seudominio.com',
-    //     offersEndpoint: '/api/ofertas',
-    //     uploadEndpoint: '/api/upload',
-    //     deleteEndpoint: '/api/excluir',
-    //     loginEndpoint: '/api/login',
-    // },
-
-    // Endpoints da API (modo demonstração / desenvolvimento local)
+    // Endpoints da API (modo produção)
     api: {
-        baseUrl: '',
+        baseUrl: 'https://ofertas-site.pages.dev',
         offersEndpoint: '/api/ofertas',
         uploadEndpoint: '/api/upload',
         deleteEndpoint: '/api/excluir',
         loginEndpoint: '/api/login',
     },
+
+    // Endpoints da API (modo demonstração / desenvolvimento local)
+    // api: {
+    //     baseUrl: '',
+    //     offersEndpoint: '/api/ofertas',
+    //     uploadEndpoint: '/api/upload',
+    //     deleteEndpoint: '/api/excluir',
+    //     loginEndpoint: '/api/login',
+    // },
 
     // Configuração de exibição
     display: {
