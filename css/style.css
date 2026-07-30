@@ -536,11 +536,12 @@ body {
     }
 
     .dots-indicator {
-        right: -2rem;
+        right: 0.5rem;
     }
 
     .fullscreen-btn {
-        right: -2rem;
+        right: 0.75rem;
+        bottom: 1rem;
     }
 }
 
