@@ -527,6 +527,41 @@ body {
     border-color: var(--accent);
 }
 
+/* ===== CREDITO DO DESENVOLVEDOR ===== */
+.credit-footer {
+    position: fixed;
+    bottom: -60px;
+    left: 0;
+    right: 0;
+    z-index: 50;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 60px;
+    background: rgba(0,0,0,0.9);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+    pointer-events: none;
+}
+
+.credit-footer.visible {
+    transform: translateY(-60px);
+}
+
+.credit-text {
+    font-size: clamp(0.8rem, 2.5vw, 1rem);
+    color: rgba(255,255,255,0.6);
+    font-weight: 400;
+    letter-spacing: 0.03em;
+    text-align: center;
+}
+
+.credit-text::before {
+    content: '👨‍💻 ';
+    font-size: 1.1em;
+}
+
 /* ===== SCROLLBAR CUSTOMIZADA (DESKTOP) ===== */
 @media (orientation: landscape) and (max-height: 500px) {
     :root {

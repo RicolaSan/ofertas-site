@@ -13,6 +13,8 @@ class OfertasApp {
         this.isSwiping = false;
         this.isPullToRefresh = false;
         this.pullStartY = 0;
+        this.isPullToCredits = false;
+        this.creditStartY = 0;
 
         // Elementos do DOM
         this.container = document.getElementById('ofertasContainer');
@@ -21,6 +23,7 @@ class OfertasApp {
         this.emptyState = document.getElementById('emptyState');
         this.swipeIndicator = document.getElementById('swipeIndicator');
         this.pullToRefresh = document.getElementById('pullToRefresh');
+        this.creditFooter = document.getElementById('creditFooter');
 
         this.init();
     }
@@ -250,12 +253,22 @@ class OfertasApp {
 
     // ===== TOUCH HANDLING =====
     onTouchStart(e) {
+        const isLastCard = this.currentIndex === this.ofertas.length - 1;
+
         // Pull-to-refresh: detectar se está no topo (primeira oferta)
         if (this.currentIndex === 0) {
             this.pullStartY = e.touches[0].clientY;
             this.isPullToRefresh = true;
         } else {
             this.isPullToRefresh = false;
+        }
+
+        // Pull-to-credits: detectar se está na última oferta
+        if (isLastCard) {
+            this.creditStartY = e.touches[0].clientY;
+            this.isPullToCredits = true;
+        } else {
+            this.isPullToCredits = false;
         }
 
         if (this.isTransitioning) return;
@@ -292,6 +305,27 @@ class OfertasApp {
             }
         }
         this.isPullToRefresh = false;
+
+        // Pull-to-credits: na última oferta, puxar para cima
+        if (this.isPullToCredits && this.currentIndex === this.ofertas.length - 1) {
+            const diff = this.creditStartY - e.touches[0].clientY;
+            if (diff > 0) {
+                const pull = Math.min(diff, 120);
+                // Puxar o container para cima para revelar o footer
+                this.container.style.transform = `translateY(${-pull * 0.3}px)`;
+                this.container.style.transition = 'none';
+
+                if (this.creditFooter) {
+                    if (pull > 60) {
+                        this.creditFooter.classList.add('visible');
+                    } else {
+                        this.creditFooter.classList.remove('visible');
+                    }
+                }
+                return;
+            }
+        }
+        this.isPullToCredits = false;
 
         if (!this.isSwiping || this.isTransitioning) return;
         this.touchCurrentY = e.touches[0].clientY;
@@ -347,6 +381,24 @@ class OfertasApp {
             return;
         }
         this.isPullToRefresh = false;
+
+        // Pull-to-credits: na última oferta
+        if (this.isPullToCredits && this.currentIndex === this.ofertas.length - 1) {
+            const diff = this.creditStartY - e.changedTouches[0].clientY;
+            // Resetar posição
+            this.container.style.transform = '';
+            this.container.style.transition = '';
+
+            if (diff > 60 && this.creditFooter) {
+                // Mostrar crédito
+                this.creditFooter.classList.add('visible');
+            } else if (this.creditFooter) {
+                this.creditFooter.classList.remove('visible');
+            }
+            this.isPullToCredits = false;
+            return;
+        }
+        this.isPullToCredits = false;
 
         if (!this.isSwiping) return;
         this.isSwiping = false;
