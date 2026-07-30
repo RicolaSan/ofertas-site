@@ -18,7 +18,6 @@ class OfertasApp {
         this.loading = document.getElementById('loadingSpinner');
         this.emptyState = document.getElementById('emptyState');
         this.swipeIndicator = document.getElementById('swipeIndicator');
-        this.dotsIndicator = document.getElementById('dotsIndicator');
         this.fullscreenBtn = document.getElementById('fullscreenBtn');
 
         this.init();
@@ -36,7 +35,6 @@ class OfertasApp {
 
         this.hideEmptyState();
         this.renderOfertas();
-        this.createDots();
         this.setupEventListeners();
         this.setupFullscreen();
 
@@ -375,59 +373,6 @@ class OfertasApp {
         });
     }
 
-    // ===== INDICADORES DE PÁGINA (BOLINHAS) =====
-    createDots() {
-        if (!this.dotsIndicator) return;
-        this.dotsIndicator.innerHTML = '';
-
-        this.ofertas.forEach((_, index) => {
-            const dot = document.createElement('div');
-            dot.className = `dot ${index === this.currentIndex ? 'active' : ''}`;
-            dot.dataset.index = index;
-            dot.setAttribute('role', 'button');
-            dot.setAttribute('tabindex', '0');
-            dot.setAttribute('aria-label', `Ir para oferta ${index + 1}`);
-
-            dot.addEventListener('click', (e) => {
-                e.stopPropagation();
-                this.goTo(index);
-            });
-
-            dot.addEventListener('keydown', (e) => {
-                if (e.key === 'Enter' || e.key === ' ') {
-                    e.preventDefault();
-                    this.goTo(index);
-                }
-            });
-
-            this.dotsIndicator.appendChild(dot);
-        });
-    }
-
-    updateDots() {
-        if (!this.dotsIndicator) return;
-        const dots = this.dotsIndicator.querySelectorAll('.dot');
-        dots.forEach((dot, index) => {
-            dot.classList.toggle('active', index === this.currentIndex);
-        });
-    }
-
-    goTo(index) {
-        if (this.isTransitioning) return;
-        if (index === this.currentIndex) return;
-        if (index < 0 || index >= this.ofertas.length) return;
-
-        this.isTransitioning = true;
-        this.currentIndex = index;
-
-        this.updateCards();
-        this.loadNearbyImages();
-
-        setTimeout(() => {
-            this.isTransitioning = false;
-        }, CONFIG.display.transitionDuration);
-    }
-
     // ===== TELA CHEIA =====
     setupFullscreen() {
         if (!this.fullscreenBtn) return;
@@ -535,7 +480,6 @@ class OfertasApp {
         });
 
         this.updateCounter();
-        this.updateDots();
     }
 
     loadNearbyImages() {
