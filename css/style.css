@@ -74,6 +74,7 @@ body {
     will-change: transform;
 }
 
+/* Garante que cards inativos fiquem fora da tela */
 .oferta-card.active {
     z-index: 2;
     transform: translateY(0);
@@ -108,20 +109,16 @@ body {
     background: #0a0a0a;
 }
 
-/* Gradiente decorativo no fundo para suavizar bordas */
+/* Remove gradiente decorativo - atrapalhava a visualizacao */
 .oferta-imagem-wrapper::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: radial-gradient(ellipse at center, transparent 60%, rgba(0,0,0,0.4) 100%);
-    pointer-events: none;
-    z-index: 1;
+    display: none;
 }
 
 .oferta-imagem {
     width: 100%;
     height: 100%;
     object-fit: contain;
+    object-position: center;
     user-select: none;
     -webkit-user-drag: none;
     position: relative;
@@ -213,20 +210,20 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    background: linear-gradient(180deg, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0) 100%);
+    background: linear-gradient(180deg, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0) 100%);
     pointer-events: none;
-    padding: 4px max(12px, env(safe-area-inset-right)) 4px max(12px, env(safe-area-inset-left));
+    padding: 6px max(16px, env(safe-area-inset-right)) 8px max(16px, env(safe-area-inset-left));
 }
 
 .header-logo {
-    height: 70%;
+    height: 85%;
     width: auto;
-    max-width: 55%;
+    max-width: 65%;
     object-fit: contain;
     pointer-events: auto;
     display: block;
-    opacity: 0.95;
-    filter: drop-shadow(0 1px 2px rgba(0,0,0,0.3));
+    opacity: 1;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.4));
     transition: opacity 0.2s ease;
 }
 
@@ -494,12 +491,11 @@ body {
 /* ===== RESPONSIVO - TABLETS E DESKTOP ===== */
 @media (min-width: 768px) {
     :root {
-        --header-height: clamp(44px, 6vh, 56px);
+        --header-height: clamp(50px, 7vh, 66px);
     }
 
-    .oferta-imagem {
-        object-fit: contain;
-        padding: 0.5rem;
+    .header-logo {
+        max-width: 55%;
     }
 
     .swipe-indicator .arrow {
