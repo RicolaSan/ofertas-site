@@ -530,6 +530,15 @@ body {
         transform: translate(-50%, -50%);
     }
 
+    /* Header acompanha a largura do container no desktop */
+    .header {
+        width: 480px;
+        max-width: 90vw;
+        left: 50%;
+        transform: translateX(-50%);
+        border-radius: 12px 12px 0 0;
+    }
+
     .dots-indicator {
         right: 0.5rem;
     }
