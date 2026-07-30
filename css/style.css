@@ -18,7 +18,7 @@
     --font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
 
     /* Header responsivo */
-    --header-height: clamp(80px, 14vh, 110px);
+    --header-height: 0px;
 
     /* Altura útil para as ofertas (viewport - header) */
     --content-height: calc(100dvh - var(--header-height));
@@ -495,7 +495,7 @@ body {
 /* ===== RESPONSIVO - TABLETS E DESKTOP ===== */
 @media (min-width: 768px) {
     :root {
-        --header-height: clamp(90px, 14vh, 120px);
+        --header-height: 0px;
     }
 
     .swipe-indicator .arrow {
@@ -557,13 +557,11 @@ body {
 /* ===== SUPORTE A MODO PAISAGEM (CELULAR) ===== */
 @media (orientation: landscape) and (max-height: 500px) {
     :root {
-        --header-height: 44px;
+        --header-height: 0px;
     }
 
     .header-logo {
-        height: 100%;
-        width: 100%;
-        object-fit: contain;
+        display: none;
     }
 
     .swipe-indicator {
