@@ -18,7 +18,6 @@ class OfertasApp {
         this.loading = document.getElementById('loadingSpinner');
         this.emptyState = document.getElementById('emptyState');
         this.swipeIndicator = document.getElementById('swipeIndicator');
-        this.fullscreenBtn = document.getElementById('fullscreenBtn');
 
         this.init();
     }
@@ -36,8 +35,6 @@ class OfertasApp {
         this.hideEmptyState();
         this.renderOfertas();
         this.setupEventListeners();
-        this.setupFullscreen();
-
         // Esconder swipe indicator se tiver apenas 1 oferta
         if (this.ofertas.length <= 1 && this.swipeIndicator) {
             this.swipeIndicator.style.display = 'none';
@@ -371,56 +368,6 @@ class OfertasApp {
             }
             lastTap = now;
         });
-    }
-
-    // ===== TELA CHEIA =====
-    setupFullscreen() {
-        if (!this.fullscreenBtn) return;
-
-        // Esconder se a API não for suportada
-        if (!document.fullscreenEnabled && !document.webkitFullscreenEnabled) {
-            this.fullscreenBtn.style.display = 'none';
-            return;
-        }
-
-        this.fullscreenBtn.addEventListener('click', () => this.toggleFullscreen());
-
-        // Atualizar ícone ao mudar estado
-        document.addEventListener('fullscreenchange', () => this.updateFullscreenIcon());
-        document.addEventListener('webkitfullscreenchange', () => this.updateFullscreenIcon());
-    }
-
-    toggleFullscreen() {
-        const el = document.documentElement;
-
-        if (!document.fullscreenElement && !document.webkitFullscreenElement) {
-            if (el.requestFullscreen) {
-                el.requestFullscreen();
-            } else if (el.webkitRequestFullscreen) {
-                el.webkitRequestFullscreen();
-            }
-        } else {
-            if (document.exitFullscreen) {
-                document.exitFullscreen();
-            } else if (document.webkitExitFullscreen) {
-                document.webkitExitFullscreen();
-            }
-        }
-    }
-
-    updateFullscreenIcon() {
-        if (!this.fullscreenBtn) return;
-        const isFullscreen = !!(document.fullscreenElement || document.webkitFullscreenElement);
-        const enterIcon = this.fullscreenBtn.querySelector('.fullscreen-icon');
-        const exitIcon = this.fullscreenBtn.querySelector('.fullscreen-exit-icon');
-
-        if (enterIcon && exitIcon) {
-            enterIcon.style.display = isFullscreen ? 'none' : '';
-            exitIcon.style.display = isFullscreen ? '' : 'none';
-        }
-
-        this.fullscreenBtn.setAttribute('title', isFullscreen ? 'Sair da tela cheia' : 'Tela cheia');
-        this.fullscreenBtn.setAttribute('aria-label', isFullscreen ? 'Sair da tela cheia' : 'Alternar tela cheia');
     }
 
     // ===== NAVEGAÇÃO =====
