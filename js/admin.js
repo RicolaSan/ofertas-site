@@ -321,6 +321,60 @@ class AdminPanel {
         this.confirmUploadBtn.disabled = true;
     }
 
+    // ===== REDIMENSIONAR IMAGEM PARA PADRÃO =====
+    redimensionarImagem(file, maxW, maxH) {
+        return new Promise((resolve, reject) => {
+            const img = new Image();
+            img.onload = () => {
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+
+                let { width, height } = img;
+                const ratio = width / height;
+
+                // Ajustar para caber dentro de maxW x maxH mantendo proporção
+                if (width > maxW || height > maxH) {
+                    if (ratio > 1) {
+                        // Imagem mais larga que alta
+                        width = maxW;
+                        height = maxW / ratio;
+                    } else {
+                        // Imagem mais alta que larga
+                        height = maxH;
+                        width = maxH * ratio;
+                    }
+                }
+
+                // Centralizar em um canvas com o tamanho exato máximo
+                canvas.width = maxW;
+                canvas.height = maxH;
+
+                // Preencher fundo branco
+                ctx.fillStyle = '#ffffff';
+                ctx.fillRect(0, 0, maxW, maxH);
+
+                // Desenhar a imagem centralizada
+                const offsetX = (maxW - width) / 2;
+                const offsetY = (maxH - height) / 2;
+                ctx.drawImage(img, offsetX, offsetY, width, height);
+
+                // Converter para blob
+                canvas.toBlob((blob) => {
+                    if (!blob) {
+                        reject(new Error('Falha ao converter imagem'));
+                        return;
+                    }
+                    // Manter o nome original com extensão .jpg
+                    const nome = file.name.replace(/\.[^/.]+$/, '') + '.jpg';
+                    const novoFile = new File([blob], nome, { type: 'image/jpeg', lastModified: Date.now() });
+                    resolve(novoFile);
+                }, 'image/jpeg', 0.92);
+            };
+            img.onerror = () => reject(new Error('Falha ao carregar imagem'));
+            img.src = URL.createObjectURL(file);
+        });
+    }
+
     // ===== UPLOAD - ENVIAR =====
     async uploadOferta() {
         if (!this.selectedFile) return;
@@ -330,17 +384,32 @@ class AdminPanel {
         this.uploadMessage.classList.add('hidden');
         this.setProgress(0);
 
+        // Redimensionar imagem para tamanho padrão (exceto PDF)
+        let fileToUpload = this.selectedFile;
+        const isPDF = this.selectedFile.type === 'application/pdf' ||
+                      this.selectedFile.name.toLowerCase().endsWith('.pdf');
+
+        if (!isPDF) {
+            try {
+                this.setProgress(5);
+                fileToUpload = await this.redimensionarImagem(this.selectedFile, 1080, 1620);
+                this.setProgress(15);
+            } catch (e) {
+                console.warn('Não foi possível redimensionar, enviando original:', e);
+            }
+        }
+
         try {
             if (CONFIG.api.baseUrl) {
                 // Upload via Worker
                 const formData = new FormData();
-                formData.append('file', this.selectedFile);
+                formData.append('file', fileToUpload);
 
                 const xhr = new XMLHttpRequest();
 
                 xhr.upload.onprogress = (e) => {
                     if (e.lengthComputable) {
-                        const pct = Math.round((e.loaded / e.total) * 100);
+                        const pct = 15 + Math.round((e.loaded / e.total) * 75);
                         this.setProgress(pct);
                     }
                 };
@@ -362,8 +431,8 @@ class AdminPanel {
             // Adicionar oferta à lista local
             const newOferta = {
                 nome: this.selectedFile.name.replace(/\.[^/.]+$/, ''),
-                tipo: this.selectedFile.type || `image/${this.selectedFile.name.split('.').pop()}`,
-                url: URL.createObjectURL(this.selectedFile),
+                tipo: fileToUpload.type || `image/${this.selectedFile.name.split('.').pop()}`,
+                url: URL.createObjectURL(fileToUpload),
                 data_upload: new Date().toISOString(),
                 ordem: this.ofertas.length + 1
             };
