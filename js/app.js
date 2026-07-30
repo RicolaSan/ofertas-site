@@ -18,6 +18,8 @@ class OfertasApp {
         this.loading = document.getElementById('loadingSpinner');
         this.emptyState = document.getElementById('emptyState');
         this.swipeIndicator = document.getElementById('swipeIndicator');
+        this.dotsIndicator = document.getElementById('dotsIndicator');
+        this.fullscreenBtn = document.getElementById('fullscreenBtn');
 
         this.init();
     }
@@ -34,7 +36,14 @@ class OfertasApp {
 
         this.hideEmptyState();
         this.renderOfertas();
+        this.createDots();
         this.setupEventListeners();
+        this.setupFullscreen();
+
+        // Esconder swipe indicator se tiver apenas 1 oferta
+        if (this.ofertas.length <= 1 && this.swipeIndicator) {
+            this.swipeIndicator.style.display = 'none';
+        }
     }
 
     async loadOfertas() {
@@ -186,6 +195,9 @@ class OfertasApp {
             }
         });
 
+        // Double-tap para zoom nas imagens
+        this.setupDoubleTap();
+
         // Esconder indicador de swipe após primeira interação
         const hideSwipeIndicator = () => {
             if (this.swipeIndicator) {
@@ -288,6 +300,149 @@ class OfertasApp {
         }, 500);
     }
 
+    // ===== DOUBLE-TAP PARA ZOOM =====
+    setupDoubleTap() {
+        let lastTap = 0;
+        let zoomedCard = null;
+
+        this.container.addEventListener('click', (e) => {
+            const now = Date.now();
+            const timeSince = now - lastTap;
+
+            if (timeSince < 300 && timeSince > 0) {
+                // Double tap detected
+                const card = e.target.closest('.oferta-card');
+                if (!card) return;
+
+                const img = card.querySelector('.oferta-imagem');
+                if (!img) return;
+
+                if (zoomedCard === card) {
+                    img.style.objectFit = 'contain';
+                    img.style.transform = 'scale(1)';
+                    zoomedCard = null;
+                } else {
+                    // Reset previous zoom
+                    if (zoomedCard) {
+                        const prevImg = zoomedCard.querySelector('.oferta-imagem');
+                        if (prevImg) {
+                            prevImg.style.objectFit = 'contain';
+                            prevImg.style.transform = 'scale(1)';
+                        }
+                    }
+                    img.style.objectFit = 'cover';
+                    img.style.transform = 'scale(1.05)';
+                    img.style.transition = 'transform 0.3s ease, object-fit 0.3s ease';
+                    zoomedCard = card;
+                }
+            }
+            lastTap = now;
+        });
+    }
+
+    // ===== INDICADORES DE PÁGINA (BOLINHAS) =====
+    createDots() {
+        if (!this.dotsIndicator) return;
+        this.dotsIndicator.innerHTML = '';
+
+        this.ofertas.forEach((_, index) => {
+            const dot = document.createElement('div');
+            dot.className = `dot ${index === this.currentIndex ? 'active' : ''}`;
+            dot.dataset.index = index;
+            dot.setAttribute('role', 'button');
+            dot.setAttribute('tabindex', '0');
+            dot.setAttribute('aria-label', `Ir para oferta ${index + 1}`);
+
+            dot.addEventListener('click', (e) => {
+                e.stopPropagation();
+                this.goTo(index);
+            });
+
+            dot.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    this.goTo(index);
+                }
+            });
+
+            this.dotsIndicator.appendChild(dot);
+        });
+    }
+
+    updateDots() {
+        if (!this.dotsIndicator) return;
+        const dots = this.dotsIndicator.querySelectorAll('.dot');
+        dots.forEach((dot, index) => {
+            dot.classList.toggle('active', index === this.currentIndex);
+        });
+    }
+
+    goTo(index) {
+        if (this.isTransitioning) return;
+        if (index === this.currentIndex) return;
+        if (index < 0 || index >= this.ofertas.length) return;
+
+        this.isTransitioning = true;
+        this.currentIndex = index;
+
+        this.updateCards();
+        this.loadNearbyImages();
+
+        setTimeout(() => {
+            this.isTransitioning = false;
+        }, CONFIG.display.transitionDuration);
+    }
+
+    // ===== TELA CHEIA =====
+    setupFullscreen() {
+        if (!this.fullscreenBtn) return;
+
+        // Esconder se a API não for suportada
+        if (!document.fullscreenEnabled && !document.webkitFullscreenEnabled) {
+            this.fullscreenBtn.style.display = 'none';
+            return;
+        }
+
+        this.fullscreenBtn.addEventListener('click', () => this.toggleFullscreen());
+
+        // Atualizar ícone ao mudar estado
+        document.addEventListener('fullscreenchange', () => this.updateFullscreenIcon());
+        document.addEventListener('webkitfullscreenchange', () => this.updateFullscreenIcon());
+    }
+
+    toggleFullscreen() {
+        const el = document.documentElement;
+
+        if (!document.fullscreenElement && !document.webkitFullscreenElement) {
+            if (el.requestFullscreen) {
+                el.requestFullscreen();
+            } else if (el.webkitRequestFullscreen) {
+                el.webkitRequestFullscreen();
+            }
+        } else {
+            if (document.exitFullscreen) {
+                document.exitFullscreen();
+            } else if (document.webkitExitFullscreen) {
+                document.webkitExitFullscreen();
+            }
+        }
+    }
+
+    updateFullscreenIcon() {
+        if (!this.fullscreenBtn) return;
+        const isFullscreen = !!(document.fullscreenElement || document.webkitFullscreenElement);
+        const enterIcon = this.fullscreenBtn.querySelector('.fullscreen-icon');
+        const exitIcon = this.fullscreenBtn.querySelector('.fullscreen-exit-icon');
+
+        if (enterIcon && exitIcon) {
+            enterIcon.style.display = isFullscreen ? 'none' : '';
+            exitIcon.style.display = isFullscreen ? '' : 'none';
+        }
+
+        this.fullscreenBtn.setAttribute('title', isFullscreen ? 'Sair da tela cheia' : 'Tela cheia');
+        this.fullscreenBtn.setAttribute('aria-label', isFullscreen ? 'Sair da tela cheia' : 'Alternar tela cheia');
+    }
+
     // ===== NAVEGAÇÃO =====
     next() {
         if (this.isTransitioning) return;
@@ -334,9 +489,18 @@ class OfertasApp {
             } else {
                 card.classList.add('next');
             }
+
+            // Reset zoom ao navegar
+            const img = card.querySelector('.oferta-imagem');
+            if (img) {
+                img.style.objectFit = '';
+                img.style.transform = '';
+                img.style.transition = '';
+            }
         });
 
         this.updateCounter();
+        this.updateDots();
     }
 
     loadNearbyImages() {
