@@ -212,7 +212,6 @@ body {
     justify-content: center;
     background: linear-gradient(180deg, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0) 100%);
     pointer-events: none;
-    padding: 6px 8px 8px 8px;
 }
 
 .header-logo {
