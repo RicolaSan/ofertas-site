@@ -489,7 +489,7 @@ body {
 /* ===== RESPONSIVO - TABLETS E DESKTOP ===== */
 @media (min-width: 768px) {
     :root {
-        --header-height: clamp(60px, 10vh, 90px);
+        --header-height: clamp(90px, 14vh, 120px);
     }
 
     .swipe-indicator .arrow {
