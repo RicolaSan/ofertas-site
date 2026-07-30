@@ -212,17 +212,17 @@ body {
     justify-content: center;
     background: linear-gradient(180deg, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0) 100%);
     pointer-events: none;
-    padding: 6px max(16px, env(safe-area-inset-right)) 8px max(16px, env(safe-area-inset-left));
+    padding: 6px 8px 8px 8px;
 }
 
 .header-logo {
     width: 100%;
     height: 100%;
     object-fit: contain;
+    object-position: center;
     pointer-events: auto;
     display: block;
     opacity: 1;
-    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.4));
     transition: opacity 0.2s ease;
 }
 
