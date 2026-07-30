@@ -90,6 +90,7 @@ class OfertasApp {
                 img.onload = () => {
                     img.classList.remove('loading');
                     img.classList.add('loaded');
+                    this.ajustarImagemSemBarras(img);
                 };
 
                 img.onerror = () => {
@@ -116,6 +117,38 @@ class OfertasApp {
     isPDF(oferta) {
         return oferta.tipo === 'application/pdf' ||
                oferta.url?.toLowerCase().endsWith('.pdf');
+    }
+
+    // ===== AJUSTE AUTOMÁTICO PARA REMOVER BARRAS PRETAS =====
+    ajustarImagemSemBarras(img) {
+        // Aguardar um frame para o layout estar pronto
+        requestAnimationFrame(() => {
+            const nw = img.naturalWidth;
+            const nh = img.naturalHeight;
+            if (!nw || !nh) return;
+
+            const wrapper = img.closest('.oferta-imagem-wrapper');
+            if (!wrapper) return;
+
+            const wrapperW = wrapper.clientWidth;
+            const wrapperH = wrapper.clientHeight;
+            if (!wrapperW || !wrapperH) return;
+
+            // Proporções
+            const ratioImg = nw / nh;       // ex: 0.65
+            const ratioBox = wrapperW / wrapperH; // ex: 0.87
+
+            // Se a imagem for mais alta que o container (ratioImg < ratioBox)
+            // usa cover para preencher sem barras laterais
+            if (ratioImg < ratioBox) {
+                img.style.objectFit = 'cover';
+                img.style.objectPosition = 'top center';
+            } else {
+                // Se for mais larga, usa contain (encaixa pela largura)
+                img.style.objectFit = 'contain';
+                img.style.objectPosition = 'center';
+            }
+        });
     }
 
     createPDFFallback(oferta) {
@@ -152,6 +185,7 @@ class OfertasApp {
                         if (img.dataset.src) {
                             img.src = img.dataset.src;
                             delete img.dataset.src;
+                            img.addEventListener('load', () => this.ajustarImagemSemBarras(img), { once: true });
                         }
                         observer.unobserve(img);
                     }
@@ -169,6 +203,7 @@ class OfertasApp {
             document.querySelectorAll('.oferta-imagem[data-src]').forEach(img => {
                 img.src = img.dataset.src;
                 delete img.dataset.src;
+                img.addEventListener('load', () => this.ajustarImagemSemBarras(img), { once: true });
             });
         }
     }
