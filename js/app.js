@@ -390,10 +390,16 @@ class OfertasApp {
             this.container.style.transition = '';
 
             if (diff > 60 && this.creditFooter) {
-                // Mostrar crédito
+                // Mostrar crédito brevemente
+                this.creditFooter.classList.remove('hiding');
                 this.creditFooter.classList.add('visible');
-            } else if (this.creditFooter) {
-                this.creditFooter.classList.remove('visible');
+                setTimeout(() => {
+                    this.creditFooter.classList.remove('visible');
+                    this.creditFooter.classList.add('hiding');
+                    setTimeout(() => {
+                        this.creditFooter.classList.remove('hiding');
+                    }, 500);
+                }, 2000);
             }
             this.isPullToCredits = false;
             return;
