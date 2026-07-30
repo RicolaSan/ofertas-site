@@ -11,6 +11,8 @@ class OfertasApp {
         this.touchStartY = 0;
         this.touchCurrentY = 0;
         this.isSwiping = false;
+        this.isPullToRefresh = false;
+        this.pullStartY = 0;
 
         // Elementos do DOM
         this.container = document.getElementById('ofertasContainer');
@@ -18,6 +20,7 @@ class OfertasApp {
         this.loading = document.getElementById('loadingSpinner');
         this.emptyState = document.getElementById('emptyState');
         this.swipeIndicator = document.getElementById('swipeIndicator');
+        this.pullToRefresh = document.getElementById('pullToRefresh');
 
         this.init();
     }
@@ -247,6 +250,14 @@ class OfertasApp {
 
     // ===== TOUCH HANDLING =====
     onTouchStart(e) {
+        // Pull-to-refresh: detectar se está no topo (primeira oferta)
+        if (this.currentIndex === 0) {
+            this.pullStartY = e.touches[0].clientY;
+            this.isPullToRefresh = true;
+        } else {
+            this.isPullToRefresh = false;
+        }
+
         if (this.isTransitioning) return;
         this.touchStartY = e.touches[0].clientY;
         this.isSwiping = true;
@@ -258,6 +269,30 @@ class OfertasApp {
     }
 
     onTouchMove(e) {
+        // Pull-to-refresh
+        if (this.isPullToRefresh && this.currentIndex === 0) {
+            const diff = e.touches[0].clientY - this.pullStartY;
+            if (diff > 0) {
+                const pull = Math.min(diff, 120);
+                this.container.style.transform = `translateY(${pull * 0.4}px)`;
+                this.container.style.transition = 'none';
+
+                if (this.pullToRefresh) {
+                    if (pull > 80) {
+                        this.pullToRefresh.classList.add('ready');
+                        this.pullToRefresh.classList.remove('visible');
+                    } else if (pull > 10) {
+                        this.pullToRefresh.classList.add('visible');
+                        this.pullToRefresh.classList.remove('ready');
+                    } else {
+                        this.pullToRefresh.classList.remove('visible', 'ready');
+                    }
+                }
+                return;
+            }
+        }
+        this.isPullToRefresh = false;
+
         if (!this.isSwiping || this.isTransitioning) return;
         this.touchCurrentY = e.touches[0].clientY;
         const diff = this.touchCurrentY - this.touchStartY;
@@ -287,6 +322,32 @@ class OfertasApp {
     }
 
     onTouchEnd(e) {
+        // Pull-to-refresh: soltou com mais de 80px puxado
+        if (this.isPullToRefresh && this.currentIndex === 0) {
+            const diff = e.changedTouches[0].clientY - this.pullStartY;
+            // Resetar posição
+            this.container.style.transform = '';
+            this.container.style.transition = '';
+
+            if (diff > 80 && this.pullToRefresh) {
+                this.pullToRefresh.classList.remove('visible', 'ready');
+                this.pullToRefresh.classList.add('loading');
+                this.pullToRefresh.querySelector('.pull-to-refresh-text').textContent = 'Atualizando...';
+                setTimeout(() => {
+                    window.location.reload();
+                }, 400);
+                return;
+            }
+
+            if (this.pullToRefresh) {
+                this.pullToRefresh.classList.remove('visible', 'ready', 'loading');
+                this.pullToRefresh.querySelector('.pull-to-refresh-text').textContent = 'Solte para atualizar';
+            }
+            this.isPullToRefresh = false;
+            return;
+        }
+        this.isPullToRefresh = false;
+
         if (!this.isSwiping) return;
         this.isSwiping = false;
 

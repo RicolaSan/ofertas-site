@@ -462,41 +462,78 @@ body {
         transform: translateX(-50%);
         border-radius: 12px 12px 0 0;
     }
-
-    .dots-indicator {
-        right: 0.5rem;
-    }
-
-    .fullscreen-btn {
-        right: 0.75rem;
-        bottom: 1rem;
-    }
 }
 
-/* ===== SUPORTE A MODO PAISAGEM (CELULAR) ===== */
+/* ===== PULL-TO-REFRESH (MOBILE) ===== */
+.pull-to-refresh {
+    position: fixed;
+    top: -60px;
+    left: 0;
+    right: 0;
+    z-index: 50;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 6px;
+    padding-bottom: 8px;
+    height: 60px;
+    background: rgba(0,0,0,0.85);
+    color: rgba(255,255,255,0.6);
+    font-size: 0.75rem;
+    transition: transform 0.2s ease;
+    pointer-events: none;
+}
+
+.pull-to-refresh.visible {
+    transform: translateY(60px);
+}
+
+.pull-to-refresh.ready {
+    transform: translateY(60px);
+}
+
+.pull-to-refresh.ready .pull-to-refresh-text {
+    color: var(--accent);
+}
+
+.pull-to-refresh-spinner {
+    width: 20px;
+    height: 20px;
+    border: 2px solid rgba(255,255,255,0.2);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin 0.6s linear infinite;
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+
+.pull-to-refresh.loading .pull-to-refresh-spinner {
+    opacity: 1;
+}
+
+.pull-to-refresh-arrow {
+    width: 16px;
+    height: 16px;
+    border: 2px solid rgba(255,255,255,0.5);
+    border-left: 0;
+    border-bottom: 0;
+    transform: rotate(-45deg);
+    transition: transform 0.2s;
+}
+
+.pull-to-refresh.ready .pull-to-refresh-arrow {
+    transform: rotate(-45deg) translateY(3px);
+    border-color: var(--accent);
+}
+
+/* ===== SCROLLBAR CUSTOMIZADA (DESKTOP) ===== */
 @media (orientation: landscape) and (max-height: 500px) {
     :root {
         --header-height: 0px;
     }
 
-    .header-logo {
-        display: none;
-    }
-
     .swipe-indicator {
         display: none;
-    }
-
-    .dots-indicator {
-        gap: 4px;
-        right: max(0.25rem, env(safe-area-inset-right));
-    }
-    .dot {
-        width: 4px;
-        height: 4px;
-    }
-    .dot.active {
-        width: 6px;
-        height: 6px;
     }
 }
